@@ -3,7 +3,10 @@ from tkinter import ttk
 from tkinter import font
 from tkinter import colorchooser
 from tkinter import filedialog
-from PIL import Image, ImageDraw, ImageFont, ImageTk, ImageGrab
+from tkinter import messagebox
+
+import PIL
+from PIL import Image, ImageTk, ImageGrab
 
 # ---------------------------- CONSTANTS ------------------------------- #
 FONT_NAME = "Arial"
@@ -57,7 +60,7 @@ def choose_color():
 
 
 color_frame = Frame(window, bg='#3E3B36')
-color_frame.grid(column=1, row=0, padx=10, pady=10, sticky="n")
+color_frame.grid(column=1, row=0, padx=10, pady=10, sticky="s")
 
 color_button = Button(color_frame, text="Select Color", font=(FONT_NAME, 12),
                       command=choose_color, bg="#36393e", fg="white",)
@@ -95,7 +98,7 @@ def scroll_options(event):
 
 
 font_type_frame = Frame(window, bg='#3E3B36')
-font_type_frame.grid(column=1, row=1, padx=10, pady=10, sticky="w")
+font_type_frame.grid(column=1, row=1, padx=10, pady=10, sticky="s")
 
 # define 3 columns in the font type frame
 for col in range(3):
@@ -131,7 +134,7 @@ def change_size(event):
 
 
 font_size_frame = Frame(window, bg='#3E3B36')
-font_size_frame.grid(column=1, row=2, padx=10, pady=10, sticky="n")
+font_size_frame.grid(column=1, row=2, padx=10, pady=10, sticky="s")
 
 # Define 2 columns in the size frame
 for col in range(2):
@@ -147,6 +150,7 @@ all_sizes = [str(i) for i in range(6, 101, 1)]
 selected_size = StringVar(font_size_frame)
 selected_size.set(all_sizes[0])
 size_combobox = ttk.Combobox(font_size_frame, values=all_sizes, textvariable=selected_size)
+size_combobox.current(14)
 size_combobox.config(width=5)
 size_combobox.grid(column=1, row=0, padx=(10, 0), pady=10)
 
@@ -154,46 +158,45 @@ size_combobox.grid(column=1, row=0, padx=(10, 0), pady=10)
 size_combobox.bind("<<ComboboxSelected>>", change_size)
 
 # ---------------------------- Opacity Widget ------------------------------- #
-opacity_frame = Frame(window, bg='#3E3B36')
-opacity_frame.grid(column=1, row=3, padx=10, pady=10, sticky="n")
-
-opacity_label = Label(opacity_frame, text="Opacity", font=(FONT_NAME, 12), fg='white', bg='#3E3B36')
-opacity_label.grid(column=0, row=0, sticky="w")
-
-# Define 2 columns for the opacity frame
-for col in range(2):
-    opacity_frame.columnconfigure(col, weight=1)
+# opacity_frame = Frame(window, bg='#3E3B36')
+# opacity_frame.grid(column=1, row=3, padx=10, pady=10, sticky="n")
+#
+# opacity_label = Label(opacity_frame, text="Opacity", font=(FONT_NAME, 12), fg='white', bg='#3E3B36')
+# opacity_label.grid(column=0, row=0, sticky="w")
+#
+# # Define 2 columns for the opacity frame
+# for col in range(2):
+#     opacity_frame.columnconfigure(col, weight=1)
 
 # Define a function to update the text item's opacity
-def update_opacity(val):
-    pass
-    # alpha = round(int(val)/100*255)  # Convert the slider value to an integer between 0 and 255
-    # # get current color from text
-    # current_color = canvas.itemcget('text', 'fill')
-    # rgb_color = window.winfo_rgb(current_color)
-    # # Convert the RGB values to the range 0-255
-    # red = rgb_color[0] // 256
-    # print(red)
-    # green = rgb_color[1] // 256
-    # print(green)
-    # blue = rgb_color[2] // 256
-    # print(blue)
-    #
-    # # Add an alpha value to create an RGBA color
-    # rgba_color = (red, green, blue, alpha)
-    # print(rgba_color)
-    #
-    # # Convert the RGBA color to a hexadecimal string format that tkinter can recognize
-    # hex_color = '#{0:02x}{1:02x}{2:02x}{3:02x}'.format(*rgba_color)
-    # print(hex_color)
-
-    # canvas.itemconfig('text', fill=hex_color)
-
-
-# Create a slider widget for adjusting opacity
-opacity_slider = Scale(opacity_frame, from_=0, to=100, orient=HORIZONTAL, length=200)
-opacity_slider.set(100)  # Set the initial opacity to 100% (1.0)
-opacity_slider.grid(column=1, row=0, padx=10, pady=10)
+# def update_opacity(val):
+#     alpha = round(int(val)/100*255)  # Convert the slider value to an integer between 0 and 255
+#     # get current color from text
+#     current_color = canvas.itemcget('text', 'fill')
+#     rgb_color = window.winfo_rgb(current_color)
+#     # Convert the RGB values to the range 0-255
+#     red = rgb_color[0] // 256
+#     print(red)
+#     green = rgb_color[1] // 256
+#     print(green)
+#     blue = rgb_color[2] // 256
+#     print(blue)
+#
+#     # Add an alpha value to create an RGBA color
+#     rgba_color = (red, green, blue, alpha)
+#     print(rgba_color)
+#
+#     # Convert the RGBA color to a hexadecimal string format that tkinter can recognize
+#     hex_color = '#{0:02x}{1:02x}{2:02x}{3:02x}'.format(*rgba_color)
+#     print(hex_color)
+#
+#     canvas.itemconfig('text', fill=rgba_color)
+#
+#
+# # Create a slider widget for adjusting opacity
+# opacity_slider = Scale(opacity_frame, from_=0, to=100, orient=HORIZONTAL, length=200, command=update_opacity)
+# opacity_slider.set(100)  # Set the initial opacity to 100% (1.0)
+# opacity_slider.grid(column=1, row=0, padx=10, pady=10)
 
 # ---------------------------- Text Move Widget ------------------------------- #
 # text move widget
@@ -216,31 +219,34 @@ def move_text_right(event=None):
 
 
 text_move_frame = Frame(window, bg='#3E3B36')
-text_move_frame.grid(column=1, row=4, padx=10, pady=10, sticky="n")
+text_move_frame.grid(column=1, row=4, padx=10, pady=10, sticky="s")
 
 # Define 3 columns for the text_move frame
 for col in range(3):
     text_move_frame.columnconfigure(col, weight=1)
 
 # Define 3 rows for the text_move frame
-for row in range(3):
+for row in range(4):
     text_move_frame.rowconfigure(row, weight=1)
+
+movement_label = Label(text_move_frame, text="Text Movement", font=(FONT_NAME, 12), fg='white', bg='#3E3B36')
+movement_label.grid(column=0, row=0, columnspan=3)
 
 # up button
 up_button = Button(text_move_frame, text="▲", font=(FONT_NAME, 12), command=move_text_up, bg="#36393e", fg="white", width=7)
-up_button.grid(column=1, row=0, pady=10)
+up_button.grid(column=1, row=1, pady=10)
 
 # down button
 down_button = Button(text_move_frame, text="▼", font=(FONT_NAME, 12), command=move_text_down, bg="#36393e", fg="white", width=7)
-down_button.grid(column=1, row=2, pady=10)
+down_button.grid(column=1, row=3, pady=10)
 
 # left button
 left_button = Button(text_move_frame, text="◀", font=(FONT_NAME, 12), command=move_text_left, bg="#36393e", fg="white", width=7)
-left_button.grid(column=0, row=1, pady=10)
+left_button.grid(column=0, row=2, pady=10)
 
 # right button
 right_button = Button(text_move_frame, text="▶", font=(FONT_NAME, 12), command=move_text_right, bg="#36393e", fg="white", width=7)
-right_button.grid(column=2, row=1, pady=10)
+right_button.grid(column=2, row=2, pady=10)
 
 # ---------------------------- Rotation Widget ------------------------------- #
 
@@ -261,7 +267,7 @@ def rotate_clockwise(event=None):
 
 
 rotation_frame = Frame(window, bg='#3E3B36')
-rotation_frame.grid(column=1, row=5, padx=10, pady=10, sticky="n")
+rotation_frame.grid(column=1, row=5, padx=10, pady=10, sticky="s")
 
 # Define 2 columns for the rotation frame
 for col in range(2):
@@ -290,19 +296,24 @@ def load_file():
                                           filetypes=(("jpg files", "*.jpg"), ("png files", "*.png"),
                                                      ("All files", "*.*")))
     if filename:
-        print(filename)
         # Open image file
-        image = Image.open(filename)
+        try:
+            image = Image.open(filename)
 
-        # resize image to fit canvas
-        resized_image = image.resize((canvas.winfo_reqwidth(), canvas.winfo_reqheight()))
+        except PIL.UnidentifiedImageError:
+            messagebox.showerror(title="Incorrect File Format",
+                                 message=f"The file you tried to open is not 'png' or 'jpeg' format!")
 
-        # create PhotoImage object from resized image
-        resized_sample_image = ImageTk.PhotoImage(resized_image)
+        else:
+            # resize image to fit canvas
+            resized_image = image.resize((canvas.winfo_reqwidth(), canvas.winfo_reqheight()))
 
-        # create image on canvas
-        loaded_pic = canvas.create_image(0, 0, image=resized_sample_image, anchor="nw", tag='picture')
-        canvas.tag_lower(loaded_pic)
+            # create PhotoImage object from resized image
+            resized_sample_image = ImageTk.PhotoImage(resized_image)
+
+            # create image on canvas
+            loaded_pic = canvas.create_image(0, 0, image=resized_sample_image, anchor="nw", tag='picture')
+            canvas.tag_lower(loaded_pic)
 
 
 def save_file():
@@ -321,7 +332,7 @@ def save_file():
 
 
 load_save_frame = Frame(window, bg='#3E3B36')
-load_save_frame.grid(column=1, row=6, padx=10, pady=10, sticky="n")
+load_save_frame.grid(column=1, row=6, padx=10, pady=10, sticky="s")
 
 # Define 2 columns for the rotation frame
 for col in range(2):
